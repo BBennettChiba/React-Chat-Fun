@@ -1,4 +1,5 @@
 const express = require('express');
+require('dotenv').config()
 const app = express();
 app.use(express.json());
 const {createUser} = require('./db/dbActions');
@@ -8,6 +9,6 @@ app.post('/', (req, res) => {
     res.json(user)
 })
 
-app.listen(3000, () =>{
-    console.log('listening on port 3000');
+app.listen(process.env.PORT, () =>{
+    console.log(`listening on port ${process.env.PORT}`);
 })
