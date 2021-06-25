@@ -1,15 +1,30 @@
-import {Entity, PrimaryGeneratedColumn, Column, ManyToOne} from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  BaseEntity,
+} from "typeorm";
 import { User } from "./User";
- 
+import { ObjectType, Field, ID } from "type-graphql";
+import { ChatRoom } from "./Chatroom";
+
+@ObjectType()
 @Entity()
-export class Message {
+export class Message extends BaseEntity {
+  @Field(() => ID, { nullable: true })
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @Field(() => User, { nullable: true })
+  @ManyToOne(() => User, (user) => user.messages)
+  user: User;
 
-    @ManyToOne(()=> User, user => user.messages)
-    user: User
+  @Field(() => ChatRoom, { nullable: true })
+  @ManyToOne(() => ChatRoom, (chatRoom) => chatRoom.messages)
+  chatRoom: ChatRoom;
 
-    @Column()
-    content: String
+  @Field(() => String, { nullable: true })
+  @Column()
+  content: String;
 }

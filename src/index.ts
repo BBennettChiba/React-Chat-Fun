@@ -1,14 +1,24 @@
-const express = require('express');
-require('dotenv').config()
-const app = express();
-app.use(express.json());
-const {createUser} = require('./db/dbActions');
+import { createConnection } from "typeorm";
+require("dotenv").config();
+import { ApolloServer } from "apollo-server-express";
+import { buildSchema } from "type-graphql";
+import { UserResolver } from "./resolvers/UserResolver";
+import * as express from "express";
 
-app.post('/', (req, res) => {
-    const user = createUser(req.body.userID, req.body.content);
-    res.json(user)
-})
+const { createUser } = require("./db/dbActions");
 
-app.listen(process.env.PORT, () =>{
-    console.log(`listening on port ${process.env.PORT}`);
-})
+(async () => {
+  const app = express();
+  await createConnection();
+  const apolloServer = new ApolloServer({
+    schema: await buildSchema({
+      resolvers: [UserResolver],
+    }),
+    context: ({ req, res }) => ({ req, res }),
+  });
+  apolloServer.applyMiddleware({ app, cors: true });
+
+  app.listen(process.env.PORT, () => {
+    console.log(`app is listening on port ${process.env.PORT}`);
+  });
+})();
