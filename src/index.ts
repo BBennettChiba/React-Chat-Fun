@@ -4,15 +4,15 @@ import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { UserResolver } from "./resolvers/UserResolver";
 import * as express from "express";
-
-const { createUser } = require("./db/dbActions");
+import { ChatRoomResolver } from "./resolvers/ChatroomResolver";
+import { MessageResolver } from "./resolvers/MessageResolver";
 
 (async () => {
   const app = express();
   await createConnection();
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver],
+      resolvers: [UserResolver, MessageResolver, ChatRoomResolver],
     }),
     context: ({ req, res }) => ({ req, res }),
   });
